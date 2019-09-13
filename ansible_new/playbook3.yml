@@ -1,0 +1,15 @@
+---
+- hosts: web
+  tasks: 
+    - name: add user
+      command: adduser charli
+      become: yes
+    - name: Set authorized key taken from file
+      authorized_key:
+        user: charli
+        state: present
+        key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+      become: yes
+
+
+

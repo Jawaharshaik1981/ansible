@@ -1,0 +1,35 @@
+---
+- hosts: web  #group name from the inventory
+  
+  vars:
+    pack_name: httpd
+    serv_name: httpd
+  
+  tasks:
+    - name: Install {{ pack_name }}
+      yum: pkg={{ pack_name }} state=installed
+      become: yes
+
+    - name: Start {{ serv_name }}
+      service: name={{ serv_name }} state=started
+      become: yes
+
+    - name: Check content
+      shell: 'cat /usr/share/httpd/noindex/index.html | grep -i "Hello world" |wc -l'
+      register: output_content
+
+    - name: change Hello world to Jawahar
+      lineinfile:
+        path: /usr/share/httpd/noindex/index.html
+        regexp: 'Hello world'
+        line: My name is Jawahar
+      become : yes
+      notify: restart httpd
+      when: output_content.stdout != "0"
+
+  handlers:
+    - name: restart httpd
+      service: name={{ serv_name }} state=restarted
+      become: yes
+
+

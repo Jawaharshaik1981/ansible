@@ -1,0 +1,10 @@
+---
+- hosts: web
+  tasks:
+    - name: Check uptime of server
+      action: uptime  
+      register: uptime 
+      become: yes
+
+    - debug: msg=uptime
+
